@@ -146,8 +146,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circle.h" />
+    <ClInclude Include="DDALine.h" />
     <ClInclude Include="Drawing.h" />
     <ClInclude Include="Line.h" />
+    <ClInclude Include="MidpointLine.h" />
+    <ClInclude Include="ParametricLine.h" />
     <ClInclude Include="project.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -156,7 +159,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Circle.cpp" />
+    <ClCompile Include="DDALine.cpp" />
     <ClCompile Include="Line.cpp" />
+    <ClCompile Include="MidpointLine.cpp" />
+    <ClCompile Include="ParametricLine.cpp" />
     <ClCompile Include="project.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -170,8 +176,6 @@
     <ResourceCompile Include="project.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="bitmap1.bmp" />
-    <Image Include="icon1.ico" />
     <Image Include="project.ico" />
     <Image Include="small.ico" />
   </ItemGroup>

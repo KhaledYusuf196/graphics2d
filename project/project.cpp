@@ -3,6 +3,9 @@
 
 #include "stdafx.h"
 #include "project.h"
+#include "DDALine.h"
+#include "ParametricLine.h"
+#include "MidpointLine.h"
 
 #define MAX_LOADSTRING 100
 
@@ -10,6 +13,7 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+Drawing *draw;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -134,9 +138,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // Parse the menu selections:
             switch (wmId)
             {
-            case ID_FILE_NEW:
-                
+            case ID_LINE_DDA:
+				if (draw != NULL) {
+					delete(draw);
+				}
+				draw = new DDALine();
                 break;
+			case ID_LINE_PARAMETRIC:
+				if (draw != NULL) {
+					delete(draw);
+				}
+				draw = new ParametricLine();
+				break;
+			case ID_LINE_MIDPOINT:
+				if (draw != NULL) {
+					delete(draw);
+				}
+				draw = new MidpointLine();
+				break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);
                 break;
@@ -147,21 +166,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
 	case WM_LBUTTONDOWN:
 		{
-		l = true;
-			x = LOWORD(lParam);
-			y = HIWORD(lParam);
+			if(draw != NULL)
+				draw->addInput(Vector2d(LOWORD(lParam), HIWORD(lParam)));
 		}
 		break;
     case WM_PAINT:
         {
-		if (l) {
-				
-				HDC hdc = GetDC(hWnd);/*BeginPaint(hWnd, &ps)*/;
-				Ellipse(hdc, x - 100, y + 100, x + 100, y - 100);
-				ReleaseDC(hWnd, hdc);
-			}
-            
-        }
+			HDC hdc = GetDC(hWnd);
+			if (draw != NULL)
+				draw->draw(hdc,RGB(100,100,100));
+			ReleaseDC(hWnd, hdc);
+		}
         break;
     case WM_DESTROY:
         PostQuitMessage(0);
@@ -170,24 +185,4 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
     return 0;
-}
-
-// Message handler for about box.
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    UNREFERENCED_PARAMETER(lParam);
-    switch (message)
-    {
-    case WM_INITDIALOG:
-        return (INT_PTR)TRUE;
-
-    case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-        {
-            EndDialog(hDlg, LOWORD(wParam));
-            return (INT_PTR)TRUE;
-        }
-        break;
-    }
-    return (INT_PTR)FALSE;
 }
