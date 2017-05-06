@@ -3,9 +3,12 @@
 
 #include "stdafx.h"
 #include "project.h"
+#include <queue>
 #include "DDALine.h"
 #include "ParametricLine.h"
 #include "MidpointLine.h"
+#include "PointClip.h"
+#include "LineClip.h"
 
 #define MAX_LOADSTRING 100
 
@@ -20,6 +23,9 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+void fillBackground(HWND hWnd, COLORREF c);
+void save(HWND hWnd);
+void load(HWND hWnd);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -138,6 +144,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // Parse the menu selections:
             switch (wmId)
             {
+			case ID_FILE_SAVE:
+				save(hWnd);
+				break;
+			case ID_FILE_LOAD:
+				load(hWnd);
+				break;
+			case ID_FILL_BACKGROUND:
+				fillBackground(hWnd, RGB(200, 0, 0));
+				break;
+			case ID_CLIPPING_LINE:
+				if (draw != NULL) {
+					delete(draw);
+				}
+				draw = new LineClip();
+				break;
+			case ID_CLIPPING_POINT:
+				if (draw != NULL) {
+					delete(draw);
+				}
+				draw = new PointClip();
+				break;
             case ID_LINE_DDA:
 				if (draw != NULL) {
 					delete(draw);
@@ -173,8 +200,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_PAINT:
         {
 			HDC hdc = GetDC(hWnd);
-			if (draw != NULL)
-				draw->draw(hdc,RGB(100,100,100));
+			if (draw != NULL) {
+				if (draw->validInput()) {
+					draw->draw(hdc, RGB(100, 100, 100));
+					
+				}
+				
+			}
+				
 			ReleaseDC(hWnd, hdc);
 		}
         break;
@@ -185,4 +218,56 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
     return 0;
+}
+
+void fillBackground(HWND hWnd, COLORREF c)
+{
+	RECT rect;
+	GetWindowRect(hWnd, &rect);
+	HDC hdc = GetDC(hWnd);
+	int width = rect.right - rect.left;
+	int height = rect.bottom - rect.top;
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; j++) {
+			SetPixel(hdc, i, j, c);
+		}
+	}
+	ReleaseDC(hWnd, hdc);
+
+
+}
+
+void save(HWND hWnd) {
+	RECT rect;
+	GetWindowRect(hWnd, &rect);
+	HDC hdc = GetDC(hWnd);
+	int width = rect.right - rect.left;
+	int height = rect.bottom - rect.top;
+	ofstream file("draw.image");
+	file.write((char*)&width,sizeof(int));
+	file.write((char*)&height, sizeof(int));
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < width; j++) {
+			COLORREF color = GetPixel(hdc, i, j);
+			file.write((char*)&color, sizeof(COLORREF));
+		}
+	}
+	file.close();
+}
+
+void load(HWND hWnd) {
+	HDC hdc = GetDC(hWnd);
+	ifstream file("draw.image");
+	int width;
+	int height;
+	file.read((char*)&width, sizeof(int));
+	file.read((char*)&height, sizeof(int));
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < width; j++) {
+			COLORREF color;
+			file.read((char*)&color, sizeof(COLORREF));
+			SetPixel(hdc, i, j,color);
+		}
+	}
+	file.close();
 }

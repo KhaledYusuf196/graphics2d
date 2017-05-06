@@ -20,6 +20,11 @@ void Line::addInput(Vector2d p)
 	}
 }
 
+bool Line::validInput()
+{
+	return !end.equals(start);
+}
+
 Line::~Line()
 {
 }

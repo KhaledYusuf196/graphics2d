@@ -4,7 +4,6 @@
 
 void DDALine::draw(HDC hdc,COLORREF c)
 {
-	if (start.equals(end))return;
 	int dx = end.x - start.x;
 	int dy = end.y - start.y;
 	SetPixel(hdc, start.x, start.y, c);
@@ -29,14 +28,14 @@ void DDALine::draw(HDC hdc,COLORREF c)
 	end = start = Vector2d::init();
 }
 
-void DDALine::readFromFile(char file[])
+void DDALine::readFromFile(ifstream file)
 {
-	
+	file.read((char*)this, sizeof(DDALine));
 }
 
-void DDALine::writeIntoFile(char file[])
+void DDALine::writeIntoFile(ofstream file)
 {
-	
+	file.write((char*)this, sizeof(DDALine));
 }
 
 

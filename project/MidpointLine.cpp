@@ -3,7 +3,6 @@
 
 void MidpointLine::draw(HDC hdc, COLORREF c)
 {
-	if (start.equals(end))return;
 	if (start.x > end.x) {
 		Vector2d temp = end;
 		end = start;
@@ -80,12 +79,14 @@ void MidpointLine::draw(HDC hdc, COLORREF c)
 	end = start = Vector2d::init();
 }
 
-void MidpointLine::readFromFile(char file[])
+void MidpointLine::readFromFile(ifstream file)
 {
+	file.read((char*)this, sizeof(MidpointLine));
 }
 
-void MidpointLine::writeIntoFile(char file[])
+void MidpointLine::writeIntoFile(ofstream file)
 {
+	file.write((char*)this, sizeof(MidpointLine));
 }
 
 MidpointLine::MidpointLine(Vector2d p1, Vector2d p2):Line(p1,p2)
